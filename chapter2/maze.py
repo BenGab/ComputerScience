@@ -1,7 +1,10 @@
 from enum import Enum
+from types import MappingProxyType
 from typing import List, NamedTuple, Callable, Optional
 import random
 from math import sqrt
+
+from generic_search import Node, dfs, node_to_path
 
 class Cell(str, Enum):
     EMPTY = " "
@@ -56,7 +59,27 @@ class Maze:
         for row in self._grid:
             output += "".join([c.value for c in row]) + "\n"
         return output
+    
+    def mark(self, path: List[MazeLocation]) -> None:
+        for location in path:
+            self._grid[location.row][location.column] = Cell.PATH
+        self._grid[self.start.row][self.start.column] = Cell.START
+        self._grid[self.goal.row][self.goal.column] = Cell.GOAL
+    
+    def clear(self, path: List[MazeLocation]) -> None:
+        for location in path:
+            self._grid[location.row][location.column] = Cell.EMPTY
+        self._grid[self.start.row][self.start.column] = Cell.START
+        self._grid[self.goal.row][self.goal.column] = Cell.GOAL
 
 if __name__ == "__main__":
     maze: Maze = Maze()
     print(maze)
+    solutionDfs: Optional[Node[MazeLocation]] = dfs(maze.start, maze.goal_test, maze.successors)
+    if solutionDfs is None:
+        print("No solution found with depth first search")
+    else:
+        pathDfs: List[MazeLocation] = node_to_path(solutionDfs)
+        maze.mark(pathDfs)
+        print(maze)
+        maze.clear(pathDfs)
