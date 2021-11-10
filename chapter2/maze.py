@@ -30,6 +30,26 @@ class Maze:
             for column in range(columns):
                 if random.uniform(0, 1.0) < sparseness:
                     self._grid[row][column] = Cell.BLOCKED
+
+    def goal_test(self, ml: MazeLocation) -> bool:
+        return ml == self.goal
+
+    def successors(self, ml: MazeLocation) -> List[MazeLocation]:
+        locations: List[MazeLocation] = []
+
+        if ml.row + 1 < self.rows and self._grid[ml.row + 1][ml.column] != Cell.BLOCKED:
+            locations.append(MazeLocation(ml.row + 1, ml.column))
+        
+        if ml.row - 1 >= 0 and self._grid[ml.row - 1][ml.column] !=  Cell.BLOCKED:
+            locations.append(MazeLocation(ml.row - 1, ml.column))
+        
+        if ml.column + 1 < self.colums and self._grid[ml.row][ml.column + 1] != Cell.BLOCKED:
+            locations.append(MazeLocation(ml.row, ml.column + 1))
+        
+        if ml.column - 1 >= 0 and self._grid[ml.row][ml.column - 1] != Cell.BLOCKED:
+            locations.append(MazeLocation(ml.row, ml.column - 1))
+
+        return locations
     
     def __str__(self) -> str:
         output: str = ""
