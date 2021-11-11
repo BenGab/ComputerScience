@@ -3,8 +3,7 @@ from types import MappingProxyType
 from typing import List, NamedTuple, Callable, Optional
 import random
 from math import sqrt
-
-from generic_search import Node, dfs, node_to_path
+from generic_search import Node, dfs, bfs, node_to_path
 
 class Cell(str, Enum):
     EMPTY = " "
@@ -83,3 +82,12 @@ if __name__ == "__main__":
         maze.mark(pathDfs)
         print(maze)
         maze.clear(pathDfs)
+    
+    solutionBfs: Optional[Node[MazeLocation]] = bfs(maze.start, maze.goal_test, maze.successors)
+    if solutionBfs is None:
+        print("No solution found with breadth-first search")
+    else:
+        pathBfs: List[MazeLocation] = node_to_path(solutionBfs)
+        maze.mark(pathBfs)
+        print(maze)
+        maze.clear(pathBfs)

@@ -56,6 +56,23 @@ class Stack(Generic[T]):
     def __repr__(self) -> str:
         return repr(self._container)
 
+class Queue(Generic[T]):
+    def __init__(self) -> None:
+        self._container: Deque[T] = Deque()
+    
+    @property
+    def emmpty(self) -> bool:
+        return not self._container
+    
+    def push(self, item: T) -> bool:
+        self._container.append(item)
+    
+    def pop(self) -> T:
+        return self._container.popleft()
+    
+    def __repr__(self) -> str:
+        return repr(self._container)
+
 class Node(Generic[T]):
     def __init__(self, state: T, parent: Optional[Node], cost: float = 0.0, heuristics: float = 0.0) -> None:
         self.state: T = state
@@ -84,6 +101,26 @@ def dfs(initital: T, goal_test: Callable[[T], bool], successors: Callable[[T], L
                 continue
             explored.add(child)
             frontier.push(Node(child, current_node))
+    return None
+
+def bfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], List[T]]) -> Optional[Node[T]]:
+    queue: Queue[Node[T]] = Queue()
+    queue.push(Node(initial, None))
+
+    explored: Set[T] = {initial}
+
+    while not queue.emmpty:
+        current_node = queue.pop()
+        current_state = current_node.state
+        
+        if(goal_test(current_state)):
+            return current_node
+        
+        for child in successors(current_state):
+            if child in explored:
+                continue
+            explored.add(child)
+            queue.push(Node(child, current_node))
     return None
 
 def node_to_path(node: Node[T]) -> List[T]:
