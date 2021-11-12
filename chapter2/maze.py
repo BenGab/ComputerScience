@@ -3,7 +3,7 @@ from types import MappingProxyType
 from typing import List, NamedTuple, Callable, Optional
 import random
 from math import sqrt
-from generic_search import Node, dfs, bfs, node_to_path
+from generic_search import Node, dfs, bfs, astar, node_to_path
 
 class Cell(str, Enum):
     EMPTY = " "
@@ -15,6 +15,21 @@ class Cell(str, Enum):
 class MazeLocation(NamedTuple):
     row: int
     column: int
+
+def euclidean_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
+    def distance(ml: MazeLocation) -> float:
+        xdist = ml.column - goal.column
+        ydist = ml.row - goal.row
+        return sqrt(xdist**2 + ydist**2)
+    return distance
+
+def manhattan_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
+    def distance(ml: MazeLocation) -> float:
+        xdist = abs(ml.column - goal.column)
+        ydist = abs(ml.row - goal.row)
+        return (xdist + ydist)
+    return distance
+
 
 class Maze:
     def __init__(self, rows: int = 10, columns: int = 10, sparseness: float = 0.2, start: MazeLocation = MazeLocation(0, 0), goal: MazeLocation = MazeLocation(9, 9)) -> None:
@@ -91,3 +106,14 @@ if __name__ == "__main__":
         maze.mark(pathBfs)
         print(maze)
         maze.clear(pathBfs)
+    
+    distance: Callable[[MazeLocation], float] = manhattan_distance(maze.goal)
+    solutionastar: Optional[Node[MazeLocation]] = astar(maze.start, maze.goal_test, maze.successors, distance)
+
+    if solutionastar is None:
+        print("No soltion found in A*")
+    else:
+        pathastar: List[MazeLocation] = node_to_path(solutionastar)
+        maze.mark(pathastar)
+        print(maze)
+        maze.clear(pathastar)
