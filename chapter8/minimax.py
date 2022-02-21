@@ -16,3 +16,13 @@ def minimax(board: Board, maximizing: bool, original_player: Piece, max_depth: i
         result: float = minimax(board.move(move), True, original_player, max_depth -1)
         worst_eval = min(result, worst_eval)
         return worst_eval 
+
+def find_best_move(board: Board, max_depth: int = 8) -> Move:
+    best_eval: float = float('-inf')
+    best_move: Move = Move(-1)
+    for move in board.legal_moves:
+        result: float = minimax(board.move(move), False, board.turn, max_depth)
+        if result > best_eval:
+            best_eval = result
+            best_move = move
+    return best_move
